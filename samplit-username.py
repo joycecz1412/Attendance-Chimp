@@ -8,5 +8,5 @@ def sample_username(file_name):
 	df = pd.read_csv(file_name)
 	number = np.random.choice(np.arange(0, len(df)))
 	indexes = np.random.choice(np.arange(0, len(df)), size=number, replace=False)
-	return df.iloc[indexes] 
+	print(df.iloc[indexes]) 
 
