@@ -6,7 +6,7 @@ import pandas as pd
 
 def sample_username(file_name):
 	df = pd.read_csv(file_name)
-	number = np.randomchoice(np.arange(0, len(df)))
-	indexes = np.randomchoice(np.arange(0, len(df)), number)
-	return df[indexes] 
+	number = np.random.choice(np.arange(0, len(df)))
+	indexes = np.random.choice(np.arange(0, len(df)), size=number, replace=False)
+	return df.iloc[indexes] 
 
