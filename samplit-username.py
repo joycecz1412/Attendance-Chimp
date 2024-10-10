@@ -11,7 +11,7 @@ def samplit(filename):
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
-	parser.add_argument(filename, type=str, help='name of the file')
+	parser.add_argument('filename', type=str, help='name of the file')
 	args = parser.parse_args()
 	samplit(args.filename)
 
