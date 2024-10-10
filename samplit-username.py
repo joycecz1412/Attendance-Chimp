@@ -1,12 +1,19 @@
 '''create function that takes a single filename as argument and outputs
 random number of sample lines in file'''
+import random
+import argparse
 
-import numpy as np
-import pandas as pd 
+def sample_username(filename):
+	file = open(filename, 'r') 
+	for line in file:
+		if random.random() <= 0.01:
+			print(line, end = '')
 
-def sample_username(file_name):
-	df = pd.read_csv(file_name)
-	number = np.random.choice(np.arange(0, len(df)))
-	indexes = np.random.choice(np.arange(0, len(df)), size=number, replace=False)
-	print(df.iloc[indexes]) 
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser()
+	parser.add_argument(f'{filename}')
+	args = parser.parse_args()
+
+samplit(args.filename)
+
 
