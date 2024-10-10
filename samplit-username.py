@@ -13,7 +13,6 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument(filename)
 	args = parser.parse_args()
-
-samplit(args.filename)
+	samplit(args.filename)
 
 
