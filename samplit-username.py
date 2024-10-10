@@ -3,7 +3,7 @@ random number of sample lines in file'''
 import random
 import argparse
 
-def sample_username(filename):
+def samplit(filename):
 	file = open(filename, 'r') 
 	for line in file:
 		if random.random() <= 0.01:
