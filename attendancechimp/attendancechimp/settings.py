@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'attendancechimp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/Users/joycezhang/cmsc13600-project-joycecz1412/attendancechimp/db.sqlite3.db',
+        'NAME': BASE_DIR / 'db.sqlite3.db',
     }
 }
 
