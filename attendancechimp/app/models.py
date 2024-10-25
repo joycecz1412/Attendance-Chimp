@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from PIL import Image 
 
 # Create your models here.
 
@@ -26,7 +25,7 @@ class Lecture(models.Model):
     qr_code_string = models.CharField(max_length=30)
 
 class QR_Codes(models.Model):
-    upload = models.ImageField(upload_to="uploads/")
+    upload = models.FileField(upload_to="uploads/")
     uploader = models.OneToOneField(User, on_delete=models.CASCADE)
     lecture = models.ForeignKey(Lecture, on_delete=models.CASCADE)
     time_uploaded = models.DateTimeField()

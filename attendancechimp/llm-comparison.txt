@@ -8,7 +8,7 @@ Comments comparing the LLM model and mine:
 
 4. Chatgpt created a student table, likely because it assumed that I didn't need to verify which students were enrolled in which class. Instead of having a foreign key constraint with User, it has a one to one constraint, which is better than foreign key in the case of people and users. I changed mine to one to one as well. 
 
-5. Chatgpt allows image upload by using model.ImageField. This is a good idea. 
+5. Chatgpt allows image upload by using model.ImageField. This is a good idea, but I can't import PIL so I stick with FileUpload. 
 
 6. Chatgpt defines self return functions for each table. It claims that these __str__ methods make it easier to identify instances when they are displayed in Django admin or queried in the Django shell, helping administrators understand each instance at a glance.
 
