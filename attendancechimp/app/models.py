@@ -1,11 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
+from PIL import Image 
 
 # Create your models here.
 
 class People(models.Model):
-    person_type = models.BinaryField() 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ROLE_CHOICES = [
+        (0, 'Student'),
+        (1, 'Instructor'),
+    ]
+    person_type = models.IntegerField(choices=ROLE_CHOICES)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     
 class Course(models.Model):
     course_ID = models.CharField(max_length=30)
@@ -21,8 +26,8 @@ class Lecture(models.Model):
     qr_code_string = models.CharField(max_length=30)
 
 class QR_Codes(models.Model):
-    upload = models.FileField(upload_to="uploads/")
-    uploader = models.ForeignKey(User, on_delete=models.CASCADE)
+    upload = models.ImageField(upload_to="uploads/")
+    uploader = models.OneToOneField(User, on_delete=models.CASCADE)
     lecture = models.ForeignKey(Lecture, on_delete=models.CASCADE)
     time_uploaded = models.DateTimeField()
     
