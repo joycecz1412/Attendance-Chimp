@@ -1,0 +1,17 @@
+Comments comparing the LLM model and mine:
+
+1. Chatgpt imported timezone and Image in addition to models and Users. Image is definitely necessary for processing images so I added that in my file as well. Timezone doesn't seem to be necessary although it is a helpful specification. 
+
+2. Chatgpt added a 'description' field to lecture. This is not really necessary for the purpose of attendance.
+
+3. Chatgpt misinterpreted my prompt. It assumed a generated a QR code from outside the lecture rather than an internally generated string to make into a QR code. 
+
+4. Chatgpt created a student table, likely because it assumed that I didn't need to verify which students were enrolled in which class. Instead of having a foreign key constraint with User, it has a one to one constraint, which is better than foreign key in the case of people and users. I changed mine to one to one as well. 
+
+5. Chatgpt allows image upload by using model.ImageField. This is a good idea. 
+
+6. Chatgpt defines self return functions for each table. It claims that these __str__ methods make it easier to identify instances when they are displayed in Django admin or queried in the Django shell, helping administrators understand each instance at a glance.
+
+There are a couple reasons why mine is still better. Chatgpt, likely from my prompt not being specific enough, does not care to verify which students are in which lecture. It likely assumes that the app is only being used by one course, which is why there is not an instructor field. It is also why there is no course table, since the model only works for one course. The QR code in my model is generated with a string that is then converted into an image, an automatic process that is faster than uploading a separate QR code into the table for each lecture. 
+
+
