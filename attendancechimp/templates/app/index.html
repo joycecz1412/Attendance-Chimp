@@ -7,6 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Bio Page</title>
     <style>
+	.highlight {
+            font-weight: bold; /* Makes the text bold */
+            background-color: yellow; /* Highlight background */
+            padding: 5px; /* Optional: Adds some padding */
+            border-radius: 3px; /* Optional: Rounds the corners */
+        }
         body {
             display: flex;
             justify-content: center;
@@ -26,10 +32,11 @@
 </head>
 <body>
 
-    <h1>Joyce Zhang and Minseo Jung</h1>
-    
+    <h1>Welcome to the Team Bio Page</h1>
+    <p>Your current logged-in user is: <span class="highlight">{{ current_user }}</span></p>
     <p>Current Time: {{ current_time }}</p>
     
+    <h2>Team Bios</h2>
     {% for bio in bios %}
         <p>
             {% if bio.name == current_user %}
