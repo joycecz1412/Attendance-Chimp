@@ -6,5 +6,4 @@ urlpatterns = [
     path('', views.team_bio_view, name='team_bio'),
     path('app/new/', views.new_user_form, name='new_user_form'),
     path('app/createUser/', views.create_user, name='create_user'),
-    path('admin/', admin.site.urls),
 ]

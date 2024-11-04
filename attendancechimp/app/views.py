@@ -6,13 +6,14 @@ from django.contrib.auth.models import User
 
 
 def team_bio_view(request):
+    current_user = request.user.username if request.user.is_authenticated else "Guest"
     bios = [
         {"name": "Joyce", "description": "Fourth Year Econ & DS Major"},
         {"name": "Minseo", "description": "Third Year Econ & DS Major"},
     ]
     current_time = timezone.localtime(timezone.now())
     context = {
-        "current_user": request.user.username, 
+        "current_user": current_user, 
         "bios": bios,
         "current_time": current_time.now().strftime("%Y-%m-%d %H:%M:%S")  # Format current time
     }
