@@ -23,6 +23,7 @@ from app.views import team_bio_view
 urlpatterns = [
     path('', include('app.urls')),
     path('admin/', admin.site.urls),
+    path('accounts/profile/', team_bio_view, name='team_bio'),
     path("accounts/", include("django.contrib.auth.urls")),
     path('index.html', team_bio_view, name='team_bio'),
 ]

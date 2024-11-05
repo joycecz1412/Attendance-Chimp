@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 
 def team_bio_view(request):
-    current_user = request.user.username if request.user.is_authenticated else "Guest"
+    current_user = request.user.username if request.user.is_authenticated else "Not Logged In"
     bios = [
         {"name": "Joyce", "description": "Fourth Year Econ & DS Major"},
         {"name": "Minseo", "description": "Third Year Econ & DS Major"},
