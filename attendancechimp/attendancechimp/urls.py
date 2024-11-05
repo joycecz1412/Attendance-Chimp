@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
-from .views import sum_view, time_view 
+from .views import sum_view, time_view
+from app.views import team_bio_view
 
 urlpatterns = [
     path('', include('app.urls')),
     path('admin/', admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
+    path('index.html', team_bio_view, name='team_bio'),
 ]
