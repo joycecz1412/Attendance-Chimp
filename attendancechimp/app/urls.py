@@ -11,5 +11,6 @@ urlpatterns = [
     path('app/new_course', views.new_course, name='course_create'), 
     path('app/new_lecture', views.new_lecture, name='qr_create'),
     path('app/new_qr_upload', views.new_qr_upload, name='qr_upload'),
+    path('app/dumpUploads/', views.dumpUploads, name='dumpUploads'),
 ]
 

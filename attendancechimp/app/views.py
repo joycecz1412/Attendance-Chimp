@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from .models import Course, People, Enrollment, Lecture, QR_Codes
+from .models import Course, People, Lecture, QR_Codes
 
 
 def team_bio_view(request):
@@ -63,7 +63,7 @@ def new_qr_upload(request):
 @require_POST
 def create_course(request):
     if not request.user.is_authenticated or not request.user.People.is_instructor:
-        return JsonResponse({"error": "Unauthorized"}, status=403)
+        return JsonResponse({"error": "Unauthorized"}, status=403)
 
     instructor_id = request.POST.get('instructor_id')
     course_ID = request.POST.get('course_ID')
@@ -71,51 +71,35 @@ def create_course(request):
     start_time = request.POST.get('start-time')
     end_time = request.POST.get('end-time')
 
-    if not course_ID or not instructor_id:
-        return JsonResponse({"error": "Missing course ID or instructor ID"}, status=400)
-
     try:
         instructor = People.objects.get(id=instructor_id, is_instructor=True)
     except People.DoesNotExist:
         return JsonResponse({"error": "Unauthorized or invalid instructor"}, status=403)
 
-    course = Course.objects.create(
-        course_ID=course_ID,
-        instructor=instructor, 
-        start_time=start_time, 
-        end_time=end_time, 
-        days=','.join(days_of_week) 
-    )
-
-    course.save()
+    new_course = Course(name=name, start_time=start, end_time=end_time, days=days_of_week, instructor=request.user)
+    new_course.save()
     
-    return JsonResponse({"status": "success", "course_id": course.course_ID})
+    return JsonResponse({"status": "success", "course_id": new_course.course_ID})
 
 @csrf_exempt
 @login_required
 @require_POST
 def create_lecture(request):
     if not request.user.is_authenticated or not request.user.People.is_instructor:
-        return JsonResponse({"error": "Unauthorized"}, status=403)
+        return JsonResponse({"error": "Unauthorized"}, status=403)
 
     course_id = request.POST.get('choice') 
     course = Course.objects.get(name=course_id)
     lecture_time = datetime.now()
-    
-    if not course_id:
-        return JsonResponse({"error": "Missing course ID"}, status=400)
 
     try:
         course = Course.objects.get(course_ID=course_id)
     except Course.DoesNotExist:
         return JsonResponse({"error": "Course does not exist"}, status=404)
 
-    lecture = Lecture.objects.create(
-        course_ID=course_ID, 
-        lecture=lecture_time
-        )
-        
-        return JsonResponse({"status": "success, lecture created"})
+    new_lecture = Lecture(course=course_instance, lecture_date=datetime.now())
+    new_lecture.save()
+    return JsonResponse({"status": "success, lecture created"})
     
 @csrf_exempt
 @login_required
@@ -129,4 +113,14 @@ def create_qr_code_upload(request):
     return JsonResponse({'message': 'QR code uploaded successfully'}, status=200)
     
 
+def dumpUploads(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=403)
+    if request.method != 'GET':
+        return HttpResponseForbidden("Only GET requests are allowed.")
+    if not request.user.People.is_instructor: 
+        return HttpResponse(status=403)
 
+    uploads = Upload.objects.all().values('user__username', 'upload_time')
+    upload_data = [{"username": entry['user__username'], "upload_time": entry['upload_time']} for entry in uploads]
+    return JsonResponse(upload_data, safe=False)

@@ -13,9 +13,9 @@ class Course(models.Model):
     course_ID = models.CharField(max_length=30)
     instructor = models.ForeignKey(People, on_delete=models.CASCADE,
                                    limit_choices_to={'is_instructor': True})
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    days = modesl.JSONField(default=list)
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    days = models.JSONField(default=list)
 
 class Enrollment(models.Model):
     course_ID = models.ForeignKey(Course, on_delete=models.CASCADE)
