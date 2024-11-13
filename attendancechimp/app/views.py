@@ -41,7 +41,9 @@ def create_user(request):
             return HttpResponseBadRequest("A user with this email already exists.")
 
         user = User.objects.create_user(username=user_name, email=email, password=password)
+        new_person = People(user=user, is_instructor=not is_student)
         user.save()
+        new_person.save()
         return JsonResponse({"message": "User created successfully!"})
     else:
         return HttpResponseBadRequest("This page only accepts POST requests.")
@@ -62,21 +64,15 @@ def new_qr_upload(request):
 @login_required
 @require_POST
 def create_course(request):
-    if not request.user.is_authenticated or not request.user.People.is_instructor:
+    if not request.user.is_authenticated or not request.user.people.is_instructor:
         return JsonResponse({"error": "Unauthorized"}, status=403)
 
-    instructor_id = request.POST.get('instructor_id')
-    course_ID = request.POST.get('course_ID')
-    days_of_week = [request.Post.get(day_key) for day_key in ['day-mon', 'day-tue', 'day-wed', 'day-thu', 'day-fri'] if request.POST.get(day_key)]
+    course_ID = request.POST.get('course-name')
+    days_of_week = [request.POST.get(day_key) for day_key in ['day-mon', 'day-tue', 'day-wed', 'day-thu', 'day-fri'] if request.POST.get(day_key)]
     start_time = request.POST.get('start-time')
     end_time = request.POST.get('end-time')
 
-    try:
-        instructor = People.objects.get(id=instructor_id, is_instructor=True)
-    except People.DoesNotExist:
-        return JsonResponse({"error": "Unauthorized or invalid instructor"}, status=403)
-
-    new_course = Course(name=name, start_time=start, end_time=end_time, days=days_of_week, instructor=request.user)
+    new_course = Course(course_ID=course_ID, start_time=start_time, end_time=end_time, days=days_of_week, instructor=request.user.people)
     new_course.save()
     
     return JsonResponse({"status": "success", "course_id": new_course.course_ID})
@@ -85,7 +81,7 @@ def create_course(request):
 @login_required
 @require_POST
 def create_lecture(request):
-    if not request.user.is_authenticated or not request.user.People.is_instructor:
+    if not request.user.is_authenticated or not request.user.people.is_instructor:
         return JsonResponse({"error": "Unauthorized"}, status=403)
 
     course_id = request.POST.get('choice') 
@@ -105,7 +101,7 @@ def create_lecture(request):
 @login_required
 @require_POST
 def create_qr_code_upload(request):
-    if request.user.People.is_instructor:
+    if request.user.people.is_instructor:
         return HttpResponse(status=401)
     image = request.FILES.get('imageUpload')
     qr_upload = Upload(user=request.user, qr_code=image)

@@ -1,6 +1,3 @@
-
-3:01 PM
-Minseo Jung
 <!-- templates/home.html -->
 {% extends 'base.html' %}
 
@@ -8,54 +5,39 @@ Minseo Jung
 
 {% block content %}
 {% if user.is_authenticated %}
-  
-  {% if not is_instructor %}
+    <div style="text-align: center;">
+        <h2>Create A New Course</h2>
+        <form action="{% url 'create_course' %}" method="post">
+            {% csrf_token %}
 
-  	<h2>Students cannot do this!</h2>
+            <label for="course-name">Course Name:</label><br>
+            <input type="text" id="course-name" name="course-name" required><br><br>
 
-  {% else %}
-  
-  	  <h2>Create A New Course</h2>
+            <label for="start-time">Start Time:</label><br>
+            <input type="time" id="start-time" name="start-time" required><br><br>
 
-	    <form action="{% url 'create_course' %}" method="post">
-        {% csrf_token %}
-    
-        <label for="course-name">Course Name:</label><br>
-        <input type="text" id="course-name" name="course-name" required><br><br>
-    
-        <label for="start-time">Start Time:</label><br>
-        <input type="time" id="start-time" name="start-time" required><br><br>
-    
-        <label for="end-time">End Time:</label><br>
-        <input type="time" id="end-time" name="end-time" required><br><br>
-    
-        <label>Days of the Week:</label><br>
-        <input type="checkbox" id="day-mon" name="day-mon" value="Monday">
-        <label for="day-mon">Monday</label><br>
-        <input type="checkbox" id="day-tue" name="day-tue" value="Tuesday">
-        <label for="day-tue">Tuesday</label><br>
-        <input type="checkbox" id="day-wed" name="day-wed" value="Wednesday">
-        <label for="day-wed">Wednesday</label><br>
-        <input type="checkbox" id="day-thu" name="day-thu" value="Thursday">
-        <label for="day-thu">Thursday</label><br>
-        <input type="checkbox" id="day-fri" name="day-fri" value="Friday">
-        <label for="day-fri">Friday</label><br>
-    
-        <input type="submit" value="Submit">
-    </form>
+            <label for="end-time">End Time:</label><br>
+            <input type="time" id="end-time" name="end-time" required><br><br>
 
-</body>
-</html>
-	  </form>
+            <label>Days of the Week:</label><br>
+            <input type="checkbox" id="day-mon" name="day-mon" value="Monday">
+            <label for="day-mon">Monday</label><br>
+            <input type="checkbox" id="day-tue" name="day-tue" value="Tuesday">
+            <label for="day-tue">Tuesday</label><br>
+            <input type="checkbox" id="day-wed" name="day-wed" value="Wednesday">
+            <label for="day-wed">Wednesday</label><br>
+            <input type="checkbox" id="day-thu" name="day-thu" value="Thursday">
+            <label for="day-thu">Thursday</label><br>
+            <input type="checkbox" id="day-fri" name="day-fri" value="Friday">
+            <label for="day-fri">Friday</label><br>
 
-  {% endif %}
-
+            <input type="submit" value="Submit">
+        </form>
+    </div>
 {% else %}
-  
-  <h2>You need to be logged in to see this page</h2>
-
-</form>
-
+    <div style="text-align: center;">
+        <p>You must be logged in to create a course.</p>
+    </div>
 {% endif %}
-
 {% endblock %}
+
