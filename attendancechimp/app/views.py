@@ -52,7 +52,7 @@ def new_course(request):
 
 @csrf_exempt
 def new_lecture(request):
-    return render(request, 'app/new_course.html'  )
+    return render(request, 'app/new_lecture.html'  )
 
 @csrf_exempt
 def new_qr_upload(request):
