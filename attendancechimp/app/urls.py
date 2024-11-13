@@ -8,4 +8,8 @@ urlpatterns = [
     path('app/new', views.new_user_form, name='new_user_form'),
     path('app/createUser', views.create_user, name='create_user'),
     path('app/createUser/', views.create_user, name='create_user'),
+    path('app/new_course', views.new_course, name='course_create'), 
+    path('app/new_lecture', views.new_lecture, name='qr_create'),
+    path('app/new_qr_upload', views.new_qr_upload, name='qr_upload'),
 ]
+

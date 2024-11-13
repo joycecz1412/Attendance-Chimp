@@ -4,20 +4,23 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class People(models.Model):
-    ROLE_CHOICES = [
-        (0, 'Student'),
-        (1, 'Instructor'),
-    ]
-    person_type = models.IntegerField(choices=ROLE_CHOICES)
+    is_instructor = models.BooleanField(default=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    student_id = models.CharField(max_length=20, blank=True, null=True)
+    instructor_id = models.CharField(max_length=20, blank=True, null=True)
     
 class Course(models.Model):
     course_ID = models.CharField(max_length=30)
-    instructor = models.ForeignKey(People, on_delete=models.CASCADE)
+    instructor = models.ForeignKey(People, on_delete=models.CASCADE,
+                                   limit_choices_to={'is_instructor': True})
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    days = modesl.JSONField(default=list)
 
 class Enrollment(models.Model):
     course_ID = models.ForeignKey(Course, on_delete=models.CASCADE)
-    student = models.ForeignKey(People, on_delete=models.CASCADE)
+    student = models.ForeignKey(People, on_delete=models.CASCADE,
+                                limit_choices_to={'is_instructor': False})
 
 class Lecture(models.Model):
     lecture = models.DateTimeField()
