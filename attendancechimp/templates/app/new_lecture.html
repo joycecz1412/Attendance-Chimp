@@ -1,4 +1,3 @@
-Minseo Jung
 <!-- templates/home.html -->
 {% extends 'base.html' %}
 
@@ -6,28 +5,27 @@ Minseo Jung
 
 {% block content %}
 {% if user.is_authenticated %}
-  
-  {% if not is_instructor %}
 
-    <h2>Students cannot do this!</h2>
-
-  {% else %}
-  
   <h2>Create A QR Code</h2>
 
-  <form action="{% url 'create_lecture' %}" method="post">
+  <form action="http://localhost:8000/app/createLecture" method="post">
     <label for="choice">Which Class:</label><br>
 
     {% for course in courses %}
 
-        <input type="radio" id="choice{{ forloop.counter }}" name="choice" value="{{course.auto_increment_id}}">
-        <label for="choice{{ forloop.counter }}">{{course.auto_increment_id}} - {{course.name}}</label><br>
+        <input type="radio" id="choice{{ forloop.counter }}" name="choice" value="{{course.course_ID}}">
+        <label for="choice{{ forloop.counter }}">{{course.course_ID}} - {{course.name}}</label><br>
 
     {% endfor %}
     
     <input type="submit" value="Submit">
 </form>
-{% endif %}
+
+<ul>
+  {% for course in courses %}
+    <li>{{ course.course_ID }} - {{ course.name }}</li>
+  {% endfor %}
+</ul>
 
 {% endif %}
 {% endblock %}

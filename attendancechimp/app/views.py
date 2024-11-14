@@ -84,17 +84,19 @@ def create_lecture(request):
     if not request.user.is_authenticated or not request.user.people.is_instructor:
         return JsonResponse({"error": "Unauthorized"}, status=403)
 
-    course_id = request.POST.get('choice') 
-    course = Course.objects.get(name=course_id)
-    lecture_time = datetime.now()
-
+    courses = Course.objects.all()
+    course_ID = request.POST.get('choice') 
+    
     try:
-        course = Course.objects.get(course_ID=course_id)
-    except Course.DoesNotExist:
-        return JsonResponse({"error": "Course does not exist"}, status=404)
+        course = Course.objects.get(course_ID=course_ID)  
 
-    new_lecture = Lecture(course=course_instance, lecture_date=datetime.now())
-    new_lecture.save()
+        lecture_time = datetime.now()
+
+        new_lecture = Lecture(course_ID=course, lecture_time=lecture_time)  # Adjust field name if needed
+        new_lecture.save()
+    except Course.DoesNotExist:
+        return JsonResponse({"error": "Course not found"}, status=404)
+    
     return JsonResponse({"status": "success, lecture created"})
     
 @csrf_exempt
@@ -104,7 +106,7 @@ def create_qr_code_upload(request):
     if request.user.people.is_instructor:
         return HttpResponse(status=401)
     image = request.FILES.get('imageUpload')
-    qr_upload = Upload(user=request.user, qr_code=image)
+    qr_upload = Upload(uploader=request.user, qr_code=image)
     qr_upload.save()
     return JsonResponse({'message': 'QR code uploaded successfully'}, status=200)
     
