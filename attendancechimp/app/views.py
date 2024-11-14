@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.utils import timezone
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -65,7 +65,7 @@ def new_qr_upload(request):
 @require_POST
 def create_course(request):
     if not request.user.is_authenticated or not request.user.people.is_instructor:
-        return JsonResponse({"error": "Unauthorized"}, status=403)
+        return JsonResponse({"error": "Unauthorized"}, status=401)
 
     course_ID = request.POST.get('course-name')
     days_of_week = [request.POST.get(day_key) for day_key in ['day-mon', 'day-tue', 'day-wed', 'day-thu', 'day-fri'] if request.POST.get(day_key)]
@@ -85,12 +85,13 @@ def create_lecture(request):
         return JsonResponse({"error": "Unauthorized"}, status=403)
 
     courses = Course.objects.all()
+    
     course_ID = request.POST.get('choice') 
     
     try:
         course = Course.objects.get(course_ID=course_ID)  
 
-        lecture_time = datetime.now()
+        lecture_time = timezone.now()
 
         new_lecture = Lecture(course_ID=course, lecture_time=lecture_time)  # Adjust field name if needed
         new_lecture.save()
@@ -106,7 +107,7 @@ def create_qr_code_upload(request):
     if request.user.people.is_instructor:
         return HttpResponse(status=401)
     image = request.FILES.get('imageUpload')
-    qr_upload = Upload(uploader=request.user, qr_code=image)
+    qr_upload = QR_Codes(uploader=request.user, qr_code=image)
     qr_upload.save()
     return JsonResponse({'message': 'QR code uploaded successfully'}, status=200)
     
@@ -119,6 +120,6 @@ def dumpUploads(request):
     if not request.user.People.is_instructor: 
         return HttpResponse(status=403)
 
-    uploads = Upload.objects.all().values('user__username', 'upload_time')
-    upload_data = [{"username": entry['user__username'], "upload_time": entry['upload_time']} for entry in uploads]
+    uploads = QR_Codes.objects.all().values('user__username', 'time_uploaded')
+    upload_data = [{"uploader": entry['user__username'], "time_uploaded": entry['time_uploaded']} for entry in uploads]
     return JsonResponse(upload_data, safe=False)

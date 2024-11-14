@@ -1,31 +1,25 @@
-<!-- templates/home.html -->
 {% extends 'base.html' %}
 
-{% block title %}Sign Up!{% endblock %}
+{% block title %}Create Lecture{% endblock %}
 
 {% block content %}
 {% if user.is_authenticated %}
 
   <h2>Create A QR Code</h2>
 
-  <form action="http://localhost:8000/app/createLecture" method="post">
+  <form action="{http://localhost:8000/app/createLecture/}" method="post">
+    {% csrf_token %}  <!-- Include CSRF token for security -->
     <label for="choice">Which Class:</label><br>
 
     {% for course in courses %}
-
-        <input type="radio" id="choice{{ forloop.counter }}" name="choice" value="{{course.course_ID}}">
-        <label for="choice{{ forloop.counter }}">{{course.course_ID}} - {{course.name}}</label><br>
-
+        <input type="radio" id="choice{{ forloop.counter }}" name="choice" value="{{ course.course_ID }}">
+        <label for="choice{{ forloop.counter }}">{{ course.course_ID }} - {{ course.instructor }} - {{ course.start_time }} to {{ course.end_time }} on {{ course.days }}</label><br>
     {% endfor %}
-    
+
     <input type="submit" value="Submit">
-</form>
+  </form>
 
-<ul>
-  {% for course in courses %}
-    <li>{{ course.course_ID }} - {{ course.name }}</li>
-  {% endfor %}
-</ul>
-
+{% else %}
+  <p>Please log in to create a lecture.</p>
 {% endif %}
 {% endblock %}

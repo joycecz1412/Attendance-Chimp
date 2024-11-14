@@ -13,7 +13,8 @@ urlpatterns = [
     path('app/new_lecture', views.new_lecture, name='new_lecture'),
     path('app/createLecture/', views.create_lecture, name='create_lecture'),
     path('app/new_qr_upload', views.new_qr_upload, name='new_qr_upload'),
-    path('app/createQRCodeUpload/', views.new_qr_upload, name='create_qr_upload'),
+    path('create_qr_code_upload/', views.new_qr_upload, name='create_qr_upload'),
     path('app/dumpUploads/', views.dumpUploads, name='dumpUploads'),
+    path('app/dumpUploads', views.dumpUploads, name='dumpUploads'),
 ]
 

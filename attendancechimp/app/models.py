@@ -17,11 +17,6 @@ class Course(models.Model):
     end_time = models.TimeField(null=True, blank=True)
     days = models.JSONField(default=list)
 
-class Enrollment(models.Model):
-    course_ID = models.ForeignKey(Course, on_delete=models.CASCADE)
-    student = models.ForeignKey(People, on_delete=models.CASCADE,
-                                limit_choices_to={'is_instructor': False})
-
 class Lecture(models.Model):
     lecture_time = models.DateTimeField()
     course_ID = models.ForeignKey(Course, on_delete=models.CASCADE)
