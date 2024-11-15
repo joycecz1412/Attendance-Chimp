@@ -109,7 +109,8 @@ def create_qr_code_upload(request):
     if request.user.people.is_instructor:
         return HttpResponse(status=401)
     image = request.FILES.get('imageUpload')
-    qr_upload = QR_Codes(uploader=request.user, qr_code=image)
+    time = timezone.now()
+    qr_upload = QR_Codes(uploader=request.user, qr_code=image, time_uploaded=time)
     qr_upload.save()
     return JsonResponse({'message': 'QR code uploaded successfully'}, status=200)
     
@@ -119,9 +120,9 @@ def dumpUploads(request):
         return HttpResponse(status=403)
     if request.method != 'GET':
         return HttpResponseForbidden("Only GET requests are allowed.")
-    if not request.user.People.is_instructor: 
+    if not request.user.people.is_instructor: 
         return HttpResponse(status=403)
 
-    uploads = QR_Codes.objects.all().values('user__username', 'time_uploaded')
-    upload_data = [{"uploader": entry['user__username'], "time_uploaded": entry['time_uploaded']} for entry in uploads]
+    uploads = QR_Codes.objects.all().values('uploader', 'time_uploaded')
+    upload_data = [{"username": entry['uploader'], "time_uploaded": entry['time_uploaded']} for entry in uploads]
     return JsonResponse(upload_data, safe=False)
