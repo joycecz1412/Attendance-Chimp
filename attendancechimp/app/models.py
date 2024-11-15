@@ -21,7 +21,7 @@ class Lecture(models.Model):
 
 class QR_Codes(models.Model):
     qr_code= models.FileField(upload_to="uploads/")
-    uploader = models.ForeignKey(People, on_delete=models.CASCADE)
+    uploader = models.ForeignKey(User, on_delete=models.CASCADE)
     lecture = models.ForeignKey(Lecture, on_delete=models.CASCADE,null=True, blank=True)
     time_uploaded = models.DateTimeField()
     
