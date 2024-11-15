@@ -83,7 +83,7 @@ def create_course(request):
 @require_POST
 def create_lecture(request):
     if not request.user.is_authenticated or not request.user.people.is_instructor:
-        return JsonResponse({"error": "Unauthorized"}, status=403)
+        return JsonResponse({"error": "Unauthorized"}, status=401)
     
     course_id = request.POST.get('choice')
 
