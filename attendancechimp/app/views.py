@@ -54,7 +54,8 @@ def new_course(request):
 
 @csrf_exempt
 def new_lecture(request):
-    return render(request, 'app/new_lecture.html'  )
+    courses = Course.objects.all()
+    return render(request, 'app/new_lecture.html', {'courses': courses})
 
 @csrf_exempt
 def new_qr_upload(request):
@@ -67,15 +68,15 @@ def create_course(request):
     if not request.user.is_authenticated or not request.user.people.is_instructor:
         return JsonResponse({"error": "Unauthorized"}, status=401)
 
-    course_ID = request.POST.get('course-name')
+    course_id = request.POST.get('course-name')
     days_of_week = [request.POST.get(day_key) for day_key in ['day-mon', 'day-tue', 'day-wed', 'day-thu', 'day-fri'] if request.POST.get(day_key)]
     start_time = request.POST.get('start-time')
     end_time = request.POST.get('end-time')
 
-    new_course = Course(course_ID=course_ID, start_time=start_time, end_time=end_time, days=days_of_week, instructor=request.user.people)
+    new_course = Course(course_id=course_id, start_time=start_time, end_time=end_time, days=days_of_week, instructor=request.user.people)
     new_course.save()
     
-    return JsonResponse({"status": "success", "course_id": new_course.course_ID})
+    return JsonResponse({"status": "success", "course_id": new_course.course_id})
 
 @csrf_exempt
 @login_required
@@ -83,22 +84,23 @@ def create_course(request):
 def create_lecture(request):
     if not request.user.is_authenticated or not request.user.people.is_instructor:
         return JsonResponse({"error": "Unauthorized"}, status=403)
+    
+    course_id = request.POST.get('choice')
 
-    courses = Course.objects.all()
-    
-    course_ID = request.POST.get('choice') 
-    
+    if not course_id:
+        return JsonResponse({"error": "No course selected"}, status=400)
+
     try:
-        course = Course.objects.get(course_ID=course_ID)  
+        course = Course.objects.get(course_id=course_id)
 
         lecture_time = timezone.now()
-
-        new_lecture = Lecture(course_ID=course, lecture_time=lecture_time)  # Adjust field name if needed
+        new_lecture = Lecture(course=course, lecture_time=lecture_time)
         new_lecture.save()
+
+        return JsonResponse({"status": "success", "message": "Lecture created successfully"})
+        
     except Course.DoesNotExist:
         return JsonResponse({"error": "Course not found"}, status=404)
-    
-    return JsonResponse({"status": "success, lecture created"})
     
 @csrf_exempt
 @login_required

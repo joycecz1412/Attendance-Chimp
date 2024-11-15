@@ -10,7 +10,7 @@ class People(models.Model):
     instructor_id = models.CharField(max_length=20, blank=True, null=True)
     
 class Course(models.Model):
-    course_ID = models.CharField(max_length=30, primary_key=True)
+    course_id = models.CharField(max_length=30, primary_key=True)
     instructor = models.ForeignKey(People, on_delete=models.CASCADE,
                                    limit_choices_to={'is_instructor': True})
     start_time = models.TimeField(null=True, blank=True)
@@ -19,7 +19,7 @@ class Course(models.Model):
 
 class Lecture(models.Model):
     lecture_time = models.DateTimeField()
-    course_ID = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
 class QR_Codes(models.Model):
     qr_code= models.FileField(upload_to="uploads/")
