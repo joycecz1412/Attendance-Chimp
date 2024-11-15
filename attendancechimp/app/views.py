@@ -117,11 +117,11 @@ def create_qr_code_upload(request):
 
 def dumpUploads(request):
     if not request.user.is_authenticated:
-        return HttpResponse(status=403)
+        return HttpResponse(status=401)
     if request.method != 'GET':
         return HttpResponseForbidden("Only GET requests are allowed.")
     if not request.user.people.is_instructor: 
-        return HttpResponse(status=403)
+        return HttpResponse(status=401)
 
     uploads = QR_Codes.objects.all().values('uploader', 'time_uploaded')
     upload_data = [{"username": entry['uploader'], "time_uploaded": entry['time_uploaded']} for entry in uploads]
