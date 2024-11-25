@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from .models import Course, People, Lecture, QR_Codes
+from .models import Course, People, Lecture, QR_Codes, getUploadsForCourse
 
 
 def team_bio_view(request):
@@ -94,7 +94,8 @@ def create_lecture(request):
         course = Course.objects.get(course_id=course_id)
 
         lecture_time = timezone.now()
-        new_lecture = Lecture(course=course, lecture_time=lecture_time)
+        qrdata = request.POST.get('qr_code_string')
+        new_lecture = Lecture(course=course, lecture_time=lecture_time, qrdata=qrdata)
         new_lecture.save()
 
         return JsonResponse({"status": "success", "message": "Lecture created successfully"})
@@ -106,6 +107,8 @@ def create_lecture(request):
 @login_required
 @require_POST
 def create_qr_code_upload(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=401)
     if request.user.people.is_instructor:
         return HttpResponse(status=401)
     image = request.FILES.get('imageUpload')
@@ -126,3 +129,13 @@ def dumpUploads(request):
     uploads = QR_Codes.objects.all().values('uploader', 'time_uploaded')
     upload_data = [{"username": entry['uploader'], "time_uploaded": entry['time_uploaded']} for entry in uploads]
     return JsonResponse(upload_data, safe=False)
+
+def getUploads(request):
+    course_id = request.GET.get('course')
+    if not course_id:
+        return JsonResponse({"error": "The 'course' parameter is required and cannot be empty."}, 
+                            status=400)
+    uploads = getUploadsForCourse(course_id)
+    upload_data = [{"uploader": qr.uploader, "time_uploaded": qr.time_uploaded}
+                   for qr in uploads]
+    return JsonResponse({"uploads": upload_data})

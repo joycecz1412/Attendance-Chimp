@@ -18,10 +18,17 @@ class Course(models.Model):
 class Lecture(models.Model):
     lecture_time = models.DateTimeField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    qrdata = models.CharField(max_length=16, null=True, blank=True)
 
 class QR_Codes(models.Model):
     qr_code= models.FileField(upload_to="uploads/")
     uploader = models.ForeignKey(User, on_delete=models.CASCADE)
     lecture = models.ForeignKey(Lecture, on_delete=models.CASCADE,null=True, blank=True)
     time_uploaded = models.DateTimeField()
-    
+
+def getUploadsForCourse(id):
+    if not Course.objects.filter(course_id=id).exists():
+        return []
+    else:
+        qr_codes = QR_Codes.objects.filter(course_id=id)
+        return qr_codes

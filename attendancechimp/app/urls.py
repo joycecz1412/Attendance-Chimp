@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from . import views
+from . import models
 
 urlpatterns = [
     path('', views.team_bio_view, name='team_bio'),
@@ -16,5 +17,6 @@ urlpatterns = [
     path('app/createQRCodeUpload/', views.create_qr_code_upload, name='create_qr_code_upload'),
     path('app/dumpUploads/', views.dumpUploads, name='dumpUploads'),
     path('app/dumpUploads', views.dumpUploads, name='dumpUploads'),
+    path('app/getUploads', views.getUploads, name='getUploads'),
 ]
 
