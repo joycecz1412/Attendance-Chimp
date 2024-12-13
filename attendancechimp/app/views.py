@@ -118,23 +118,24 @@ def create_qr_code_upload(request):
         return HttpResponse(status=401)
     if request.user.people.is_instructor:
         return HttpResponse(status=401)
-    upload = request.FILES.get('imageUpload')
-    try:
-        image = Image.open(upload)
-        qr_code = decode(image)
-        if qr_code: 
-            qr_data = qr_code[0].data.decode("utf-8")
-            lecture = Lecture.objects.filter(qrdata=qr_data).first()
-            if not lecture:
-                return JsonResponse({'status': 'error', 'message': 'No matching lecture found for the QR code.'}, status=404)
-            qr_upload = QR_Codes(uploader=request.user, qr_code=qr_data, 
-                                 time_uploaded=timezone.now(), lecture=lecture)
-            qr_upload.save()
-            return JsonResponse({'message': 'QR code uploaded successfully'}, status=200)
-        else:
-            return JsonResponse({"status": "error", "message": "No QR code found."}, status=400)
-    except Exception as e:
-            return JsonResponse({"status": "error", "message": f"Error decoding QR code: {str(e)}"})   
+    if request.method == 'POST':
+        upload = request.FILES.get('imageUpload')
+        try:
+            image = Image.open(upload)
+            qr_code = decode(image)
+            if qr_code: 
+                qr_data = qr_code[0].data.decode("utf-8")
+                lecture = Lecture.objects.filter(qrdata=qr_data).first()
+                if not lecture:
+                    return JsonResponse({'status': 'error', 'message': 'No matching lecture found for the QR code.'}, status=404)
+                qr_upload = QR_Codes(uploader=request.user, qr_code=qr_data, 
+                                    time_uploaded=timezone.now(), lecture=lecture)
+                qr_upload.save()
+                return JsonResponse({'message': 'QR code uploaded successfully'}, status=200)
+            else:
+                return JsonResponse({"status": "error", "message": "No QR code found."}, status=400)
+        except Exception as e:
+                return JsonResponse({"status": "error", "message": f"Error decoding QR code: {str(e)}"})   
 
 def dumpUploads(request):
     if not request.user.is_authenticated:
@@ -154,6 +155,8 @@ def getUploads(request):
         return JsonResponse({"error": "The 'course' parameter is required and cannot be empty."}, 
                             status=400)
     uploads = getUploadsForCourse(course_id)
+    if not uploads:  # If no uploads are found for the given course_id
+        return JsonResponse({"error": "No uploads found for the given course."}, status=400)
     upload_data = [{"uploader": qr.uploader, "time_uploaded": qr.time_uploaded}
                    for qr in uploads]
     return JsonResponse({"uploads": upload_data})

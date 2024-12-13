@@ -12,6 +12,15 @@ import string
 import re
 from bs4 import BeautifulSoup
 from gradescope_utils.autograder_utils.decorators import weight, number
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'attendancechimp.settings')
+import django
+django.setup()
+from pyzbar.pyzbar import decode
+from PIL import Image
+import io
+from app.models import Lecture
+
 
 if path.exists("/autograder"):
     AG = "/autograder"
@@ -367,7 +376,7 @@ class TestDjangoHw5simple(unittest.TestCase):
         session = self.session_ins
         before_rows = self.count_app_rows()
         #Now hit Create QRCode, now that we are logged in
-        data = {'choice': "CMSC13600"}
+        data = {'choice': "CS104"}
         response = session.post(
             "http://localhost:8000/app/createLecture/",
             data=data)
@@ -377,7 +386,7 @@ class TestDjangoHw5simple(unittest.TestCase):
                         "Cannot confirm createLecture updated database. "
                         "Content: {}".format(response.text))
         
-        new_lecture = self.get_latest_lecture()
+        new_lecture = Lecture.objects.order_by('-lecture_time').first()
         # Assert that `qrdata` is not None and has 16 characters
         self.assertIsNotNone(new_lecture.qrdata, "QR data was not generated.")
         self.assertEqual(len(new_lecture.qrdata), 16, "QR data length is not 16 characters.")
@@ -404,7 +413,7 @@ class TestDjangoHw5simple(unittest.TestCase):
         '''Test that getUploads endpoint works and triggers correct function'''
         session = self.session_ins
         bad_course_id = "INVALID_COURSE_ID"
-        response = session.get("http://localhost:8000/app/getUploads/?course={bad_course_id}")
+        response = session.get(f"http://localhost:8000/app/getUploads/?course={bad_course_id}")
         self.assertEqual(response.status_code, 400, f"Expected status code 400, got {response.status_code}")
         response_data = response.json()
         # Verify the error message in the response
