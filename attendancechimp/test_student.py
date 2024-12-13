@@ -410,7 +410,7 @@ class TestDjangoHw5simple(unittest.TestCase):
     def test_getUploads(self):
         '''Test that getUploads endpoint works and triggers correct function'''
         session = self.session_ins
-        bad_course_id = "INVALID_COURSE_ID"
-        response = session.get(f"http://localhost:8000/app/getUploads/?course={bad_course_id}")
+        course_id = 'CS103'
+        response = session.get(f"http://localhost:8000/app/getUploads/?course={course_id}")
         self.assertEqual(response.status_code, 400, f"Expected status code 400, got {response.status_code}")
 
