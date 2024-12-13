@@ -108,6 +108,8 @@ class TestDjangoHw5simple(unittest.TestCase):
         '''Counts all the rows in sqlite tables beginning
         with "app", to confirm that rows are being added.
         '''
+        if not path.exists("attendancechimp/db.sqlite3"):
+            raise AssertionError("Cannot find attendancechimp/db.sqlite3, this test isn't going to work")
         tables = check_output(["sqlite3", "attendancechimp/db.sqlite3",
             "SELECT name FROM sqlite_master WHERE type='table'"]).decode().split("\n")
         apptables = [table for table in tables if table[0:3] == 'app']
@@ -307,7 +309,11 @@ class TestDjangoHw5simple(unittest.TestCase):
         '''Test that createQRCodeUpload endpoint actually adds data
         '''
         session = self.session_stu
-        before_rows = self.count_app_rows()
+        try:
+            before_rows = self.count_app_rows()
+        except AssertionError:
+            self.assertEqual(0,1, "Cannot find attendancechimp/db.sqlite3!")
+
         # Now hit createLecture, now that we are logged in
         data = {'imageUpload': open("test_QR.png", "rb")}
         response2 = session.post("http://localhost:8000/app/createQRCodeUpload/",
@@ -353,3 +359,54 @@ class TestDjangoHw5simple(unittest.TestCase):
         self.assertGreater(after_rows - before_rows, 0,
             "Cannot confirm createLecture updated database" +
             "Content:{}".format(response2.text))
+
+#create 3 new tests
+    def test_randomQRCode_add(self):
+        '''Test that the random QR string is created if not inputted
+        '''
+        session = self.session_ins
+        before_rows = self.count_app_rows()
+        #Now hit Create QRCode, now that we are logged in
+        data = {'choice': "CMSC13600"}
+        response = session.post(
+            "http://localhost:8000/app/createLecture/",
+            data=data)
+        # Check if the lecture was created
+        after_rows = self.count_app_rows()
+        self.assertGreater(after_rows - before_rows, 0,
+                        "Cannot confirm createLecture updated database. "
+                        "Content: {}".format(response.text))
+        
+        new_lecture = self.get_latest_lecture()
+        # Assert that `qrdata` is not None and has 16 characters
+        self.assertIsNotNone(new_lecture.qrdata, "QR data was not generated.")
+        self.assertEqual(len(new_lecture.qrdata), 16, "QR data length is not 16 characters.")
+
+    def test_decode(self):
+        '''Test that QR Code function gives error if invalid image is uploaded'''
+        session = self.session_ins
+        before_rows = self.count_app_rows()
+        img = Image.new('RGB', (200, 200), color='white')  # An empty white image
+        img_bytes = io.BytesIO()
+        img.save(img_bytes, format='PNG')
+        img_bytes.seek(0)  
+        
+        invalid_image = {'imageUpload': ('invalid.png', img_bytes, 'image/png')}
+        response = session.post("http://localhost:8000/app/createQRCodeUpload/",
+                                 files=invalid_image)
+        response_data = response.json()
+        self.assertIn("status", response_data, "Response does not contain 'status' key.")
+        self.assertEqual(response.status_code, 400, f"Expected status code 400, got {response.status_code}")
+        after_rows = self.count_app_rows()
+        self.assertEqual(before_rows, after_rows, "Row count changed when it shouldn't have.")
+
+    def test_getUploads(self):
+        '''Test that getUploads endpoint works and triggers correct function'''
+        session = self.session_ins
+        bad_course_id = "INVALID_COURSE_ID"
+        response = session.get("http://localhost:8000/app/getUploads/?course={bad_course_id}")
+        self.assertEqual(response.status_code, 400, f"Expected status code 400, got {response.status_code}")
+        response_data = response.json()
+        # Verify the error message in the response
+        self.assertIn("error", response_data, "Response does not contain 'error' key.")
+

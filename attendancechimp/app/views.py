@@ -6,7 +6,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from .models import Course, People, Lecture, QR_Codes, getUploadsForCourse
-
+from django.shortcuts import get_object_or_404 
+import secrets
+import string
+from pyzbar.pyzbar import decode
+from PIL import Image
+import io
 
 def team_bio_view(request):
     current_user = request.user.username if request.user.is_authenticated else "Not Logged In"
@@ -95,11 +100,13 @@ def create_lecture(request):
 
         lecture_time = timezone.now()
         qrdata = request.POST.get('qr_code_string')
+        if not qrdata:
+            characters = string.ascii_letters + string.digits + string.punctuation
+            random_string = ''.join(secrets.choice(characters) for _ in range(16))
+            qrdata = random_string
         new_lecture = Lecture(course=course, lecture_time=lecture_time, qrdata=qrdata)
         new_lecture.save()
-
         return JsonResponse({"status": "success", "message": "Lecture created successfully"})
-        
     except Course.DoesNotExist:
         return JsonResponse({"error": "Course not found"}, status=404)
     
@@ -111,12 +118,23 @@ def create_qr_code_upload(request):
         return HttpResponse(status=401)
     if request.user.people.is_instructor:
         return HttpResponse(status=401)
-    image = request.FILES.get('imageUpload')
-    time = timezone.now()
-    qr_upload = QR_Codes(uploader=request.user, qr_code=image, time_uploaded=time)
-    qr_upload.save()
-    return JsonResponse({'message': 'QR code uploaded successfully'}, status=200)
-    
+    upload = request.FILES.get('imageUpload')
+    try:
+        image = Image.open(upload)
+        qr_code = decode(image)
+        if qr_code: 
+            qr_data = qr_code[0].data.decode("utf-8")
+            lecture = Lecture.objects.filter(qrdata=qr_data).first()
+            if not lecture:
+                return JsonResponse({'status': 'error', 'message': 'No matching lecture found for the QR code.'}, status=404)
+            qr_upload = QR_Codes(uploader=request.user, qr_code=qr_data, 
+                                 time_uploaded=timezone.now(), lecture=lecture)
+            qr_upload.save()
+            return JsonResponse({'message': 'QR code uploaded successfully'}, status=200)
+        else:
+            return JsonResponse({"status": "error", "message": "No QR code found."}, status=400)
+    except Exception as e:
+            return JsonResponse({"status": "error", "message": f"Error decoding QR code: {str(e)}"})   
 
 def dumpUploads(request):
     if not request.user.is_authenticated:
