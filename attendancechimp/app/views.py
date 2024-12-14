@@ -116,6 +116,8 @@ def create_lecture(request):
 def create_qr_code_upload(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
+    if request.user.people.is_instructor:
+        return HttpResponse(status=401)
     if request.method == 'POST':
         upload = request.FILES.get('imageUpload')
         try:
@@ -152,9 +154,6 @@ def getUploads(request):
     if not course_id:
         return JsonResponse({"error": "The 'course' parameter is required and cannot be empty."}, 
                             status=400)
-    course = Course.objects.filter(course_id=course_id).first()  # Using filter to avoid exception
-    if not course:
-        return JsonResponse({"error": "Course not found."}, status=400)
     uploads = getUploadsForCourse(course_id)
     upload_data = [{"uploader": qr.uploader, "time_uploaded": qr.time_uploaded}
                    for qr in uploads]

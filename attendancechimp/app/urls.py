@@ -19,5 +19,6 @@ urlpatterns = [
     path('app/dumpUploads/', views.dumpUploads, name='dumpUploads'),
     path('app/dumpUploads', views.dumpUploads, name='dumpUploads'),
     path('app/getUploads', views.getUploads, name='getUploads'),
+    path('app/getUploads/', views.getUploads, name='getUploads')
 ]
 

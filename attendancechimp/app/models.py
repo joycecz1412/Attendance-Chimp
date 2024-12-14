@@ -30,5 +30,5 @@ def getUploadsForCourse(id):
     if not Course.objects.filter(course_id=id).exists():
         return []
     else:
-        qr_codes = QR_Codes.objects.filter(course_id=id)
+        qr_codes = QR_Codes.objects.filter(lecture__course__course_id=id)
         return qr_codes

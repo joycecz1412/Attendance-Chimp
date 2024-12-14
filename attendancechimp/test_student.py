@@ -393,7 +393,7 @@ class TestDjangoHw5simple(unittest.TestCase):
 
     def test_decode(self):
         '''Test that QR Code function gives error if invalid image is uploaded'''
-        session = self.session_ins
+        session = self.session_stu
         before_rows = self.count_app_rows()
         img = Image.new('RGB', (200, 200), color='white')  # An empty white image
         img_bytes = io.BytesIO()
@@ -410,7 +410,7 @@ class TestDjangoHw5simple(unittest.TestCase):
     def test_getUploads(self):
         '''Test that getUploads endpoint works and triggers correct function'''
         session = self.session_ins
-        course_id = 'CS103'
-        response = session.get(f"http://localhost:8000/app/getUploads/?course={course_id}")
+        id = 'CS103'
+        response = session.get(f"http://localhost:8000/app/getUploads/?course={id}")
         self.assertEqual(response.status_code, 400, f"Expected status code 400, got {response.status_code}")
 
