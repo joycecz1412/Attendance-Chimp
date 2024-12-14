@@ -408,9 +408,8 @@ class TestDjangoHw5simple(unittest.TestCase):
         self.assertEqual(before_rows, after_rows, "Row count changed when it shouldn't have.")
 
     def test_getUploads(self):
-        '''Test that getUploads endpoint works and triggers correct function'''
+        '''Test that getUploads endpoint requires course parameter'''
         session = self.session_ins
-        id = 'CS103'
-        response = session.get(f"http://localhost:8000/app/getUploads/?course={id}")
-        self.assertEqual(response.status_code, 200, f"Expected status code 200, got {response.status_code}")
+        response = session.get(f"http://localhost:8000/app/getUploads")
+        self.assertEqual(response.status_code, 400, f"Expected status code 400, got {response.status_code}")
 
