@@ -155,6 +155,8 @@ def getUploads(request):
         return JsonResponse({"error": "The 'course' parameter is required and cannot be empty."}, 
                             status=400)
     uploads = getUploadsForCourse(course_id)
+    if not uploads:
+        return JsonResponse({"error": "No courses found for course id."}, status=404)
     upload_data = [{"uploader": qr.uploader, "time_uploaded": qr.time_uploaded}
                    for qr in uploads]
     return JsonResponse({"uploads": upload_data})
