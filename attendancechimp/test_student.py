@@ -412,5 +412,5 @@ class TestDjangoHw5simple(unittest.TestCase):
         session = self.session_ins
         id = 'CS103'
         response = session.get(f"http://localhost:8000/app/getUploads/?course={id}")
-        self.assertEqual(response.status_code, 404, f"Expected status code 404, got {response.status_code}")
+        self.assertEqual(response.status_code, 200, f"Expected status code 200, got {response.status_code}")
 

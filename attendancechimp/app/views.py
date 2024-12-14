@@ -159,4 +159,4 @@ def getUploads(request):
         return JsonResponse({"error": "No courses found for course id."}, status=404)
     upload_data = [{"uploader": qr.uploader, "time_uploaded": qr.time_uploaded}
                    for qr in uploads]
-    return JsonResponse({"uploads": upload_data})
+    return JsonResponse({"uploads": upload_data}, status=200)
