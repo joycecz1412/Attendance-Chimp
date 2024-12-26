@@ -87,7 +87,7 @@ def guess_words(md5_file, WORD_FILE, number_str):
 #patches is the word that is misspelled 
 def edit1(word):
     letters = "abcdefghijklmnopqrstuvwxyz"
-    #edit1:
+    #edit1:t
     splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
     deletes = [L + R[1:] for L, R in splits if R]
     transposes = [L + R[1] + R[0] + R[2:] for L, R in splits if len(R) > 1]
